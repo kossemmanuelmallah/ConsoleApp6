@@ -36,8 +36,7 @@ namespace SportRental.Forms
                 AutoGenerateColumns = true,
                 AllowUserToAddRows = false,
                 ReadOnly = true,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect
             };
             Controls.Add(_grid);
             LoadData();
@@ -55,7 +54,11 @@ namespace SportRental.Forms
             var addButton = new Button { Text = "Добавить", Width = 100 };
             addButton.Click += ButtonAdd_Click;
 
+            var refreshButton = new Button { Text = "Обновить", Width = 100 };
+            refreshButton.Click += ButtonRefresh_Click;
+
             buttonsPanel.Controls.Add(addButton);
+            buttonsPanel.Controls.Add(refreshButton);
 
             Controls.Add(buttonsPanel);
         }
@@ -78,9 +81,22 @@ namespace SportRental.Forms
                 .ToList();
 
             _grid.DataSource = null;
-            _grid.Refresh();
+            _grid.Columns.Clear();
             _grid.DataSource = rows;
-            _grid.Refresh();
+            _grid.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+            _grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            _grid.ColumnHeadersHeight = 30;
+            if (_grid.Rows.Count > 0)
+            {
+                _grid.FirstDisplayedScrollingRowIndex = 0;
+                _grid.ClearSelection();
+                _grid.Rows[0].Selected = true;
+            }
+        }
+
+        private void ButtonRefresh_Click(object sender, EventArgs e)
+        {
+            LoadData();
         }
 
         private void ButtonAdd_Click(object sender, EventArgs e)

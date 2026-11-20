@@ -20,8 +20,7 @@ namespace SportRental.Forms
                 AutoGenerateColumns = true,
                 AllowUserToAddRows = false,
                 ReadOnly = true,
-                SelectionMode = DataGridViewSelectionMode.FullRowSelect,
-                ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize
+                SelectionMode = DataGridViewSelectionMode.FullRowSelect
             };
             Controls.Add(_grid);
             LoadData();
@@ -45,9 +44,13 @@ namespace SportRental.Forms
             var deleteButton = new Button { Text = "Удалить", Width = 100 };
             deleteButton.Click += ButtonDelete_Click;
 
+            var refreshButton = new Button { Text = "Обновить", Width = 100 };
+            refreshButton.Click += ButtonRefresh_Click;
+
             buttonsPanel.Controls.Add(addButton);
             buttonsPanel.Controls.Add(editButton);
             buttonsPanel.Controls.Add(deleteButton);
+            buttonsPanel.Controls.Add(refreshButton);
 
             Controls.Add(buttonsPanel);
         }
@@ -55,9 +58,22 @@ namespace SportRental.Forms
         private void LoadData()
         {
             _grid.DataSource = null;
-            _grid.Refresh();
+            _grid.Columns.Clear();
             _grid.DataSource = new System.Collections.Generic.List<EquipmentSize>(_repository.GetAll());
-            _grid.Refresh();
+            _grid.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCells);
+            _grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            _grid.ColumnHeadersHeight = 30;
+            if (_grid.Rows.Count > 0)
+            {
+                _grid.FirstDisplayedScrollingRowIndex = 0;
+                _grid.ClearSelection();
+                _grid.Rows[0].Selected = true;
+            }
+        }
+
+        private void ButtonRefresh_Click(object sender, EventArgs e)
+        {
+            LoadData();
         }
 
         private void ButtonAdd_Click(object sender, EventArgs e)
